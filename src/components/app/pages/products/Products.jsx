@@ -1,25 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../../../../store/productSlice';
+import { addToCart } from '../../../../store/cartSlice';
 
 
 const Products = () => {
 
+  const products = useSelector(store => store.products.products)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [])
+
+  if(products.length === 0){
+    return <div class='text-center'>
+      <div style={{marginTop: '100px'}} class='spinner-border' role='status' >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+
+    </div>
+  }
 
 
 
   return (
     <div className='d-flex flex-wrap gap-2' > 
-    <div className="card" style={{width: "180px"}}> 
-      <img className="card-img-top" alt="..."/> 
+    {products.map(el => (
+        <div key={el.id} className="card" style={{width: "180px"}}> 
+      <img src={el.image} className="card-img-top" alt="..."/> 
         <div className="card-body"> 
-          <h5 className="card-title">title</h5> 
+          <h5 className="card-title">{el.title}</h5> 
           <p className='card-text'> 
+          {el.description.slice(0, 50) + '...'}
           </p> 
-          <h6>$</h6> 
-               <a href="#" className="btn btn-primary">
+          <h6> {el.price}$</h6> 
+               <a href="#" className="btn btn-primary"
+                onClick={() => {
+                    dispatch(addToCart(el))
+                }}
+               >
+              
                    + add to cart
                    </a> 
          </div> 
      </div> 
+    ))}
+  
          
        </div> 
   );
